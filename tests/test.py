@@ -47,29 +47,10 @@ import sys
 from pathlib import Path
 
 
-def _repo_root() -> Path:
-    """The directory containing the ``py_libredwg`` package."""
-    here = Path(__file__).resolve()
-    for parent in here.parents:
-        if (parent / "py_libredwg" / "__init__.py").is_file():
-            return parent
-    return here.parent
+from py_libredwg import DwgDecoder, DwgError  # noqa: E402
+from py_libredwg.dwg_parser import parser  # noqa: E402
 
 
-if not __package__:
-    # Run directly.  There is no parent package to resolve ".." against, so the
-    # repository root has to go on the path and the imports have to be absolute.
-    sys.path.insert(0, str(_repo_root()))
-    from py_libredwg import DwgDecoder, DwgError  # noqa: E402
-    from py_libredwg.dwg_parser import parser  # noqa: E402
-else:
-    # Run as a module, or imported by pytest.  The package is already
-    # importable and the relative form survives the file being moved.
-    from .. import DwgDecoder, DwgError  # noqa: E402
-    from ..dwg_parser import parser  # noqa: E402
-
-#: A real drawing to try it on.  This library was developed against an
-#: R2004 cp936 survey drawing; point this at your own, or pass argv[1].
 DEFAULT_PATH = "drawing.dwg"
 
 
