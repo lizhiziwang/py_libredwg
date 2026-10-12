@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/

@@ -1,0 +1,81 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "py-libredwg"
+version = "0.1.0"
+description = "Pure-Python read-only DWG (R13-R2018) parser, translated from GNU LibreDWG. Derivative work of GNU LibreDWG; licensed GPL-3.0-or-later."
+readme = "README.md"
+
+# REQUIRED: this project is a derivative work of GNU LibreDWG, which is
+# licensed GPL-3.0-or-later. It must NOT be relicensed as MIT/BSD/Apache.
+# See py_libredwg/license_notice.md for the full reasoning.
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE", "py_libredwg/license_notice.md"]
+
+authors = [{ name = "py-libredwg contributors" }]
+keywords = ["dwg", "cad", "autocad", "libredwg", "geojson", "parser", "gis"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: GIS",
+  "Topic :: Multimedia :: Graphics :: Viewers",
+]
+
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+# Optional cross-check helpers used only by the test suite.
+# ezdxf is MIT-licensed and is used solely to read the LibreDWG test-suite
+# .dxf fixtures; it is not a runtime dependency of py-libredwg.
+test-dxf = ["ezdxf>=1.0"]
+dev = ["pytest>=7.0", "ezdxf>=1.0", "ruff>=0.5", "mypy>=1.8"]
+
+[project.urls]
+Homepage = "https://github.com/LibreDWG/libredwg"
+"Upstream (GNU LibreDWG)" = "https://www.gnu.org/software/libredwg/"
+"License (GPL-3.0-or-later)" = "https://www.gnu.org/licenses/gpl-3.0.html"
+
+[project.scripts]
+py-libredwg = "py_libredwg.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["py_libredwg"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# tests/ has no __init__.py, so pytest's own path insertion covers only tests/,
+# not the repository root the package lives in.  `python -m pytest` gets the
+# root onto sys.path as a side effect of -m, but a bare `pytest` does not —
+# this setting makes both work, and matches what an IDE's pytest runner does.
+pythonpath = ["."]
+filterwarnings = ["error::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+# E501 line length: the comments run long where the reason matters more than
+# the margin.
+# E702 statement-per-line: the Reed-Solomon stride combiner in sections.py is
+# a lookup table of `c1(4); c4(0)` sequences transcribed from the C.  One
+# statement per line would quadruple its length and make the table harder to
+# read against upstream, not easier.
+ignore = ["E501", "E702"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_ignores = true
